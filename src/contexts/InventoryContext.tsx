@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { Localidade, Unidade, Item, StatusItem } from '@/types';
 
 interface InventoryContextType {
@@ -20,6 +20,46 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
   const [localidades, setLocalidades] = useState<Localidade[]>([]);
   const [unidades, setUnidades] = useState<Unidade[]>([]);
   const [itens, setItens] = useState<Item[]>([]);
+
+  // Carregar dados do localStorage na inicialização
+  useEffect(() => {
+    const savedLocalidades = localStorage.getItem('inventory-localidades');
+    const savedUnidades = localStorage.getItem('inventory-unidades');
+    const savedItens = localStorage.getItem('inventory-itens');
+
+    if (savedLocalidades) {
+      setLocalidades(JSON.parse(savedLocalidades).map((loc: any) => ({
+        ...loc,
+        createdAt: new Date(loc.createdAt)
+      })));
+    }
+    if (savedUnidades) {
+      setUnidades(JSON.parse(savedUnidades).map((uni: any) => ({
+        ...uni,
+        createdAt: new Date(uni.createdAt)
+      })));
+    }
+    if (savedItens) {
+      setItens(JSON.parse(savedItens).map((item: any) => ({
+        ...item,
+        createdAt: new Date(item.createdAt),
+        updatedAt: new Date(item.updatedAt)
+      })));
+    }
+  }, []);
+
+  // Salvar dados no localStorage sempre que houver mudanças
+  useEffect(() => {
+    localStorage.setItem('inventory-localidades', JSON.stringify(localidades));
+  }, [localidades]);
+
+  useEffect(() => {
+    localStorage.setItem('inventory-unidades', JSON.stringify(unidades));
+  }, [unidades]);
+
+  useEffect(() => {
+    localStorage.setItem('inventory-itens', JSON.stringify(itens));
+  }, [itens]);
 
   const addLocalidade = (localidade: Omit<Localidade, 'id' | 'createdAt'>) => {
     const novaLocalidade: Localidade = {

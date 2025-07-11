@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Localidades from "./pages/Localidades";
 import Unidades from "./pages/Unidades";
 import Itens from "./pages/Itens";
+import { Visualizacao } from "./pages/Visualizacao";
 import Relatorios from "./pages/Relatorios";
 import NotFound from "./pages/NotFound";
 
@@ -25,6 +26,7 @@ const App = () => (
             <Route path="/localidades" element={<Localidades />} />
             <Route path="/unidades" element={<Unidades />} />
             <Route path="/itens" element={<Itens />} />
+            <Route path="/visualizacao" element={<Visualizacao />} />
             <Route path="/relatorios" element={<Relatorios />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

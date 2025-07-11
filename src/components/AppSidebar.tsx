@@ -4,7 +4,8 @@ import {
   Archive, 
   Database, 
   File,
-  Circle
+  Circle,
+  Network
 } from "lucide-react";
 
 import {
@@ -24,6 +25,7 @@ const items = [
   { title: "Localidades", url: "/localidades", icon: Circle },
   { title: "Unidades", url: "/unidades", icon: Archive },
   { title: "Itens", url: "/itens", icon: Box },
+  { title: "Visualização", url: "/visualizacao", icon: Network },
   { title: "Relatórios", url: "/relatorios", icon: File },
 ];
 
