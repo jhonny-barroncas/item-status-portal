@@ -68,14 +68,18 @@ export function Visualizacao() {
         </p>
       </div>
 
-      <div className="relative min-h-[600px] bg-background border rounded-lg p-8">
+      <div className="relative min-h-[600px] bg-gradient-to-br from-background to-secondary/20 border rounded-xl p-8 overflow-hidden">
+        <div className="absolute inset-0 bg-grid-white/5 [mask-image:radial-gradient(white,transparent_85%)]" />
+        
         {/* Localidade Principal (Centro) */}
         {localidadePrincipal && (
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-            <div className={`relative w-32 h-32 rounded-full border-4 ${getStatusColor(getLocalidadeStatus(localidadePrincipal.id))} flex flex-col items-center justify-center bg-white shadow-lg`}>
-              <Scan className="w-8 h-8 mb-2 text-primary" />
-              <span className="text-sm font-bold text-center px-2">{localidadePrincipal.nome}</span>
-              <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2">
+          <div className="relative z-10 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <div className={`relative w-40 h-40 rounded-full border-4 ${getStatusColor(getLocalidadeStatus(localidadePrincipal.id))} flex flex-col items-center justify-center bg-white shadow-2xl hover:scale-105 transition-transform duration-300`}>
+              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-2">
+                <Scan className="w-8 h-8 text-primary" />
+              </div>
+              <span className="text-sm font-bold text-center px-2 text-foreground">{localidadePrincipal.nome}</span>
+              <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2">
                 <StatusBadge status={getLocalidadeStatus(localidadePrincipal.id) as any} />
               </div>
             </div>
@@ -85,45 +89,72 @@ export function Visualizacao() {
         {/* Outras Localidades (Conectadas ao Centro) */}
         {outrasLocalidades.map((localidade, index) => {
           const angle = (index * (360 / outrasLocalidades.length)) * (Math.PI / 180);
-          const radius = 200;
-          const x = 50 + (radius * Math.cos(angle)) / 8; // Convertendo para porcentagem
-          const y = 50 + (radius * Math.sin(angle)) / 8;
+          const radius = 250;
+          const x = 50 + (radius * Math.cos(angle)) / 10;
+          const y = 50 + (radius * Math.sin(angle)) / 10;
+          
+          const itensLocalidade = itens.filter(item => item.localidadeId === localidade.id);
+          const itemRepresentativo = itensLocalidade[0]; // Pega o primeiro item para mostrar a imagem
           
           return (
             <div key={localidade.id}>
               {/* Linha conectando ao centro */}
-              <svg className="absolute inset-0 w-full h-full pointer-events-none">
+              <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
+                <defs>
+                  <linearGradient id={`gradient-${index}`} x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.8" />
+                    <stop offset="100%" stopColor="hsl(var(--accent))" stopOpacity="0.3" />
+                  </linearGradient>
+                </defs>
                 <line
                   x1="50%"
                   y1="50%"
                   x2={`${x}%`}
                   y2={`${y}%`}
-                  stroke="hsl(var(--primary))"
-                  strokeWidth="2"
-                  opacity="0.6"
+                  stroke={`url(#gradient-${index})`}
+                  strokeWidth="3"
+                  strokeDasharray="5,5"
+                  className="animate-pulse"
                 />
               </svg>
 
               {/* Nó da localidade */}
               <div 
-                className="absolute transform -translate-x-1/2 -translate-y-1/2"
+                className="relative z-10 absolute transform -translate-x-1/2 -translate-y-1/2 group"
                 style={{ left: `${x}%`, top: `${y}%` }}
               >
-                <div className={`relative w-24 h-24 rounded-full border-4 ${getStatusColor(getLocalidadeStatus(localidade.id))} flex flex-col items-center justify-center bg-white shadow-lg`}>
-                  <Scan className="w-6 h-6 mb-1 text-primary" />
-                  <span className="text-xs font-bold text-center px-1">{localidade.nome}</span>
+                <div className={`relative w-28 h-28 rounded-full border-4 ${getStatusColor(getLocalidadeStatus(localidade.id))} flex flex-col items-center justify-center bg-white shadow-xl hover:scale-110 transition-all duration-300 group-hover:shadow-2xl`}>
+                  {itemRepresentativo?.imagem ? (
+                    <img 
+                      src={itemRepresentativo.imagem} 
+                      alt={localidade.nome}
+                      className="w-12 h-12 object-cover rounded-full mb-1"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-1">
+                      <Scan className="w-6 h-6 text-primary" />
+                    </div>
+                  )}
+                  <span className="text-xs font-bold text-center px-1 text-foreground leading-tight">{localidade.nome}</span>
                   
-                  {/* Status da localidade */}
+                  {/* Status de manutenção */}
                   {getLocalidadeStatus(localidade.id) === 'manutencao' && (
-                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
-                      <span className="text-xs font-bold text-red-600 bg-white px-2 py-1 rounded shadow">
+                    <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 z-20">
+                      <span className="text-xs font-bold text-destructive bg-background px-2 py-1 rounded-md shadow-lg border border-destructive/20">
                         MANUTENÇÃO
                       </span>
                     </div>
                   )}
                   
-                  <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2">
+                  <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2">
                     <StatusBadge status={getLocalidadeStatus(localidade.id) as any} />
+                  </div>
+                  
+                  {/* Tooltip com informações */}
+                  <div className="absolute top-full mt-2 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30">
+                    <div className="bg-card border border-border/50 rounded-lg p-2 shadow-lg min-w-max">
+                      <p className="text-xs text-muted-foreground">{itensLocalidade.length} itens</p>
+                    </div>
                   </div>
                 </div>
               </div>

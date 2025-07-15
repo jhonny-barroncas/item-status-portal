@@ -7,6 +7,7 @@ import {
   Circle,
   Network
 } from "lucide-react";
+import logoBringel from "@/assets/logo-bringel.png";
 
 import {
   Sidebar,
@@ -36,19 +37,30 @@ export function AppSidebar() {
 
   const isActive = (path: string) => currentPath === path;
   const getNavCls = ({ isActive }: { isActive: boolean }) =>
-    isActive ? "bg-primary text-primary-foreground font-medium" : "hover:bg-accent";
+    isActive 
+      ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-medium shadow-lg border-l-4 border-accent" 
+      : "hover:bg-gradient-to-r hover:from-secondary/60 hover:to-accent/20 hover:border-l-2 hover:border-accent/50 transition-all duration-300";
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" className="bg-gradient-to-b from-card to-secondary/50 border-r border-border/50">
       <SidebarContent>
-        <div className="p-4 border-b border-border">
-          <h2 className={`font-bold text-lg ${state === 'collapsed' ? 'hidden' : 'block'}`}>
-            Inventário
-          </h2>
+        <div className="p-4 border-b border-border/50 bg-gradient-to-r from-primary/10 to-accent/10">
+          <div className="flex items-center gap-3">
+            <img 
+              src={logoBringel} 
+              alt="Bringel Logo" 
+              className="w-8 h-8 rounded-lg object-contain bg-white p-1"
+            />
+            {state === 'expanded' && (
+              <h2 className="font-bold text-lg bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                Inventário
+              </h2>
+            )}
+          </div>
         </div>
         
         <SidebarGroup>
-          <SidebarGroupLabel>Sistema</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-muted-foreground/80 font-medium tracking-wide">Sistema</SidebarGroupLabel>
 
           <SidebarGroupContent>
             <SidebarMenu>
@@ -56,8 +68,8 @@ export function AppSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <NavLink to={item.url} end className={getNavCls}>
-                      <item.icon className="mr-2 h-4 w-4" />
-                      {state === 'expanded' && <span>{item.title}</span>}
+                      <item.icon className="mr-2 h-5 w-5 transition-transform duration-200 group-hover:scale-110" />
+                      {state === 'expanded' && <span className="transition-all duration-200">{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
