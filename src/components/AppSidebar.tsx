@@ -38,13 +38,13 @@ export function AppSidebar() {
   const isActive = (path: string) => currentPath === path;
   const getNavCls = ({ isActive }: { isActive: boolean }) =>
     isActive 
-      ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-medium shadow-lg border-l-4 border-accent" 
-      : "hover:bg-gradient-to-r hover:from-secondary/60 hover:to-accent/20 hover:border-l-2 hover:border-accent/50 transition-all duration-300";
+      ? "bg-gradient-to-r from-primary to-primary/90 text-primary-foreground font-medium shadow-lg border-l-4 border-accent" 
+      : "text-secondary-foreground hover:bg-gradient-to-r hover:from-secondary hover:to-secondary/80 hover:text-foreground hover:border-l-2 hover:border-accent/50 transition-all duration-300";
 
   return (
-    <Sidebar collapsible="icon" className="bg-gradient-to-b from-card to-secondary/50 border-r border-border/50">
+    <Sidebar collapsible="icon" className="bg-gradient-to-b from-card to-secondary border-r border-border">
       <SidebarContent>
-        <div className="p-4 border-b border-border/50 bg-gradient-to-r from-primary/10 to-accent/10">
+        <div className="p-4 border-b border-border bg-gradient-to-r from-primary/15 to-accent/15">
           <div className="flex items-center gap-3">
             <img 
               src={logoBringel} 
@@ -52,7 +52,7 @@ export function AppSidebar() {
               className="w-8 h-8 rounded-lg object-contain bg-white p-1"
             />
             {state === 'expanded' && (
-              <h2 className="font-bold text-lg bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+              <h2 className="font-bold text-lg text-foreground">
                 Inventário
               </h2>
             )}
@@ -60,7 +60,7 @@ export function AppSidebar() {
         </div>
         
         <SidebarGroup>
-          <SidebarGroupLabel className="text-muted-foreground/80 font-medium tracking-wide">Sistema</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-foreground font-medium tracking-wide px-2">Sistema</SidebarGroupLabel>
 
           <SidebarGroupContent>
             <SidebarMenu>

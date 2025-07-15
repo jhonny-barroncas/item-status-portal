@@ -2,8 +2,9 @@ import { useInventory } from "@/contexts/InventoryContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusBadge } from "@/components/StatusBadge";
-import { File } from "lucide-react";
+import { File, FileSpreadsheet } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import * as XLSX from 'xlsx';
 
 export default function Relatorios() {
   const { localidades, unidades, itens } = useInventory();
@@ -61,6 +62,74 @@ export default function Relatorios() {
     toast({
       title: "Sucesso",
       description: "Relatório baixado com sucesso!",
+    });
+  };
+
+  const generateExcel = () => {
+    if (itens.length === 0) {
+      toast({
+        title: "Aviso",
+        description: "Não há itens para exportar",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Preparar dados para o Excel
+    const excelData = itens.map(item => ({
+      'Nome': item.nome,
+      'Descrição': item.descricao || '',
+      'Status': item.status,
+      'Localidade': localidades.find(l => l.id === item.localidadeId)?.nome || 'N/A',
+      'Unidade': unidades.find(u => u.id === item.unidadeId)?.nome || 'N/A',
+      'Observações': item.observacoes || '',
+      'Data Criação': item.createdAt.toLocaleDateString('pt-BR'),
+      'Última Atualização': item.updatedAt.toLocaleDateString('pt-BR')
+    }));
+
+    // Criar workbook
+    const workbook = XLSX.utils.book_new();
+    
+    // Criar planilha principal com dados dos itens
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+    
+    // Definir largura das colunas
+    const colWidths = [
+      { wch: 25 }, // Nome
+      { wch: 40 }, // Descrição
+      { wch: 15 }, // Status
+      { wch: 20 }, // Localidade
+      { wch: 20 }, // Unidade
+      { wch: 30 }, // Observações
+      { wch: 15 }, // Data Criação
+      { wch: 18 }  // Última Atualização
+    ];
+    worksheet['!cols'] = colWidths;
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Inventário');
+
+    // Criar planilha de resumo
+    const summaryData = [
+      { Métrica: 'Total de Localidades', Valor: localidades.length },
+      { Métrica: 'Total de Unidades', Valor: unidades.length },
+      { Métrica: 'Total de Itens', Valor: itens.length },
+      { Métrica: 'Itens Disponíveis', Valor: statusCount.disponivel || 0 },
+      { Métrica: 'Itens em Uso', Valor: statusCount['em-uso'] || 0 },
+      { Métrica: 'Itens em Manutenção', Valor: statusCount.manutencao || 0 },
+      { Métrica: 'Itens Indisponíveis', Valor: statusCount.indisponivel || 0 }
+    ];
+    
+    const summaryWorksheet = XLSX.utils.json_to_sheet(summaryData);
+    summaryWorksheet['!cols'] = [{ wch: 25 }, { wch: 15 }];
+    XLSX.utils.book_append_sheet(workbook, summaryWorksheet, 'Resumo');
+
+    // Salvar arquivo
+    const fileName = `inventario-${new Date().toISOString().split('T')[0]}.xlsx`;
+    XLSX.writeFile(workbook, fileName);
+
+    toast({
+      title: "Sucesso",
+      description: "Relatório Excel baixado com sucesso!",
     });
   };
 
@@ -128,11 +197,15 @@ export default function Relatorios() {
         </div>
         
         <div className="space-x-2">
+          <Button onClick={generateExcel}>
+            <FileSpreadsheet className="mr-2 h-4 w-4" />
+            Exportar Excel
+          </Button>
           <Button onClick={generateCSV} variant="outline">
             <File className="mr-2 h-4 w-4" />
             Exportar CSV
           </Button>
-          <Button onClick={generateReport}>
+          <Button onClick={generateReport} variant="outline">
             <File className="mr-2 h-4 w-4" />
             Exportar JSON
           </Button>

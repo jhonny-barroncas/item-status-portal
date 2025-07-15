@@ -1,6 +1,8 @@
 import { useInventory } from "@/contexts/InventoryContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusBadge } from "@/components/StatusBadge";
+import { InteractiveMap } from "@/components/InteractiveMap";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Scan } from "lucide-react";
 
 export function Visualizacao() {
@@ -64,11 +66,18 @@ export function Visualizacao() {
       <div>
         <h1 className="text-3xl font-bold">Visualização da Rede</h1>
         <p className="text-muted-foreground">
-          Visualize suas localidades e itens em formato de rede
+          Visualize suas localidades e itens em diferentes formatos
         </p>
       </div>
 
-      <div className="relative min-h-[600px] bg-gradient-to-br from-background to-secondary/20 border rounded-xl p-8 overflow-hidden">
+      <Tabs defaultValue="network" className="w-full">
+        <TabsList>
+          <TabsTrigger value="network">Rede Visual</TabsTrigger>
+          <TabsTrigger value="interactive">Mapa Interativo</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="network" className="space-y-6">
+          <div className="relative min-h-[600px] bg-gradient-to-br from-background to-secondary/20 border rounded-xl p-8 overflow-hidden">
         <div className="absolute inset-0 bg-grid-white/5 [mask-image:radial-gradient(white,transparent_85%)]" />
         
         {/* Localidade Principal (Centro) */}
@@ -161,7 +170,13 @@ export function Visualizacao() {
             </div>
           );
         })}
-      </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="interactive" className="space-y-6">
+          <InteractiveMap />
+        </TabsContent>
+      </Tabs>
 
       {/* Legenda */}
       <Card>
